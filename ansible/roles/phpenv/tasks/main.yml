@@ -1,0 +1,5 @@
+- include: phpenv.yml
+- include: php-fpm.yml
+- include: composer.yml
+- include: nginx.yml
+

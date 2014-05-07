@@ -1,0 +1,12 @@
+---
+- name: epelリポジトリを設定
+  ignore_errors: true
+  action: shell rpm -Uvh http://ftp-srv2.kddilabs.jp/Linux/distributions/fedora/epel/6/x86_64/epel-release-6-8.noarch.rpm
+- name: epelリポジトリをデフォルト無効化
+  copy: src=epel.repo dest=/etc/yum.repos.d/epel.repo owner=root group=root
+- name: remiリポジトリを設定
+  ignore_errors: true
+  action: shell rpm -Uvh http://remi.kazukioishi.net/enterprise/remi-release-6.rpm
+- name: remiリポジトリをデフォルト無効化
+  copy: src=remi.repo dest=/etc/yum.repos.d/remi.repo owner=root group=root
+

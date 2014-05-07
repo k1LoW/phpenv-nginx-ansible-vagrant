@@ -1,0 +1,5 @@
+---
+- name: ユーザ追加
+  user: name={{ username }} comment=""
+- name: ユーザにsudo権限を付与/sudo時にPATHを引き継げるように設定
+  template: src=sudoers.j2 dest=/etc/sudoers.d/{{ username }} owner=root group=root mode=0440

@@ -1,0 +1,35 @@
+---
+- name: PostgreSQL moduleに必要なパッケージをインストール
+  yum: name={{ item }} state=present enablerepo=epel
+  with_items:
+    - python-psycopg2
+- name: PostgreSQLをインストール
+  yum: name={{ item }} state=present
+  with_items:
+    - postgresql-server
+- name: check postgresql.conf
+  command: test -f "/var/lib/pgsql/data/postgresql.conf"
+  register: result
+  ignore_errors: true
+- name: initdbを実行
+  command: /sbin/service postgresql initdb -E UNICODE --no-locale -D /var/lib/pgsql/data
+  when: result|failed
+- name: pg_hba.confを設定
+  template: src=pg_hba.conf.j2 dest=/var/lib/pgsql/data/pg_hba.conf
+  when: result|failed
+  notify: restart postgresql
+- name: postgresql.confを設定
+  copy: src=postgresql.conf dest=/var/lib/pgsql/data/postgresql.conf
+  when: result|failed
+  notify: restart postgresql
+- name: PostgreSQLを起動
+  service: name=postgresql state=started enabled=yes
+- name: データベースを作成
+  postgresql_db:
+    name={{ dbname }}
+    state=present
+    encoding='UTF-8'
+    template='template0'
+
+
+

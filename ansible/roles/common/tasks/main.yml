@@ -1,0 +1,4 @@
+- include: user.yml
+- include: yum.yml
+- include: common.yml
+

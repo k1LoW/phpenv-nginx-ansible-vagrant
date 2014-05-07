@@ -1,0 +1,11 @@
+---
+- name: Nginx公式リポジトリを設定
+  ignore_errors: true
+  action: shell rpm -Uvh http://nginx.org/packages/centos/6/noarch/RPMS/nginx-release-centos-6-0.el6.ngx.noarch.rpm
+- name: Nginxリポジトリをデフォルト無効化
+  copy: src=nginx.repo dest=/etc/yum.repos.d/nginx.repo owner=root group=root
+- name: Nginxをインストール
+  yum: pkg=nginx state=installed enablerepo=nginx
+- name: Nginxを起動
+  service: name=nginx state=started enabled=yes
+

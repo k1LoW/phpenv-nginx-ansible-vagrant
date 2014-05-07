@@ -1,0 +1,32 @@
+server {
+    listen       8055;
+    server_name  localhost;
+
+    root   {{ docroot }}app/webroot/;
+    index index.php;
+    access_log /var/log/access.log;
+    error_log /var/log/error.log;
+
+    location / {
+        try_files $uri $uri/ /index.php?$uri&$args;
+    }
+
+    #error_page  404              /404.html;
+
+    # redirect server error pages to the static page /50x.html
+    #
+    error_page   500 502 503 504  /50x.html;
+    location = /50x.html {
+        root   /usr/share/nginx/html;
+    }
+
+    location ~ \.php$ {
+        try_files       $uri =404;
+        fastcgi_pass    127.0.0.1:{{ php_fpm_port }};
+        fastcgi_index   index.php;
+        fastcgi_param   SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        include         fastcgi_params;
+    }
+
+}
+

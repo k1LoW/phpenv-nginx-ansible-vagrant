@@ -1,0 +1,5 @@
+---
+- name: composerをダウンロード
+  raw: curl -sS https://getcomposer.org/installer | php
+- name: composerを設置
+  command: mv composer.phar /usr/local/bin/composer

@@ -1,0 +1,66 @@
+---
+- name: phpenvをインストールするのに必要なパッケージをインストール
+  yum: name={{ item }} state=present
+  with_items:
+    - libxml2-devel
+    - bison
+    - bison-devel
+    - openssl-devel
+    - curl-devel
+    - libjpeg-devel
+    - libpng-devel
+    - readline-devel
+    - libtidy-devel
+    - libxslt-devel
+    - httpd-devel
+    - enchant-devel
+    - libXpm
+    - libXpm-devel
+    - freetype-devel
+    - t1lib
+    - t1lib-devel
+    - gmp-devel
+    - libc-client-devel
+    - libicu-devel
+    - oniguruma-devel
+    - net-snmp
+    - net-snmp-devel
+    - bzip2-devel
+    - postgresql-devel
+- name: libmcryptはepelから
+  yum: name={{ item }} state=present enablerepo=epel
+  with_items:
+    - re2c
+    - libmcrypt
+    - libmcrypt-devel
+- name: phpenvがインストール済みがどうかを確認
+  command: ls /usr/local/share/phpenv
+  register: result
+  ignore_errors: true
+- name: phpenvのmasterをインストール
+  command: git clone -b master git://github.com/CHH/phpenv.git /usr/local/src/phpenv
+  when: result|failed
+- name: php-install.shを実行
+  raw: PHPENV_ROOT=/usr/local/share/phpenv sh /usr/local/src/phpenv/bin/phpenv-install.sh
+  when: result|failed
+- name: PATHを追加
+  copy: src=phpenv.sh dest=/etc/profile.d/phpenv.sh
+- name: pluginsディレクトリを作成
+  file: path=/usr/local/share/phpenv/plugins force=yes state=directory
+- name: php-buildをインストール
+  command: git clone git://github.com/CHH/php-build.git /usr/local/share/phpenv/plugins/php-build
+  when: result|failed
+- name: PHPコンパイル時のdefault_configure_optionsを設定
+  copy: src=default_configure_options dest=/usr/local/share/phpenv/plugins/php-build/share/php-build/default_configure_options
+- name: phpenv-apache-versionをインストール
+  command: git clone git://github.com/garamon/phpenv-apache-version /usr/local/share/phpenv/plugins/phpenv-apache-version
+  when: result|failed
+- name: PHPをインストール
+  command: phpenv install {{ php_version }}
+  when: result|failed
+- name: インストールしたPHPをglobalに設定
+  command: phpenv global {{ php_version }}
+- name: mysql.iniの設置
+  copy: src=mysql.ini dest=/usr/local/share/phpenv/versions/{{ php_version }}/etc/conf.d/mysql.ini
+- name: timezone.iniの設置
+  copy: src=timezone.ini dest=/usr/local/share/phpenv/versions/{{ php_version }}/etc/conf.d/timezone.ini

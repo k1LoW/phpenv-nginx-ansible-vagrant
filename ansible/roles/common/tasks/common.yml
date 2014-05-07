@@ -1,0 +1,22 @@
+---
+- name: hostnameを設定
+  command: hostname {{ hostname }}
+- name: sysyconfig/i18nを日本語に設定
+  raw: sed -i.org -e "s/LANG=\"C\"/LANG=\"ja_JP.UTF-8\"/" /etc/sysconfig/i18n
+- name: SELinux moduleのためのパッケージをインストール
+  yum: name=libselinux-python state=installed
+- name: SELinuxをOFFに設定
+  selinux: state=disabled
+- name: SELinuxをOFFに設定
+  shell: if [ "`/usr/sbin/getenforce`" = "Enforcing" ]; then /usr/sbin/setenforce 0; fi
+- name: 最低限必要なパッケージをインストール
+  yum: pkg={{ item }} state=installed
+  with_items:
+    - git
+    - git-svn
+    - unzip
+    - wget
+- name: iptablesの許可IPアドレス設定
+  template: src=iptables.j2 dest=/etc/sysconfig/iptables owner=root group=root mode=0644
+  notify:
+    - restart iptables

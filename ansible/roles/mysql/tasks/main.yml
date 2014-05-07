@@ -1,0 +1,21 @@
+---
+- name: MySQL moduleに必要なパッケージをインストール
+  yum: name={{ item }} state=present
+  with_items:
+  - python-iniparse
+  - MySQL-python
+- name: MySQLをインストール
+  yum: name={{ item }} state=present
+  with_items:
+    - mysql
+- name: my.cnfを設定
+  copy: src=my.cnf dest=/etc/my.cnf owner=root group=root
+  notify: restart mysql
+- name: MySQLの起動
+  service: name=mysqld state=started enabled=yes
+- name: データベースを作成
+  mysql_db:
+    name={{ dbname }}
+    state=present
+    encoding=utf8
+

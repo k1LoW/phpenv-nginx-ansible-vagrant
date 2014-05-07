@@ -1,0 +1,16 @@
+---
+- name: docrootの作成
+  file: path={{ docroot }} mode=0777 owner=nginx group=nginx force=yes state=directory
+- name: php-fpm.confの設置
+  template: src=php-fpm.conf.j2 dest=/usr/local/share/phpenv/versions/{{ php_version }}/etc/php-fpm.conf
+- name: php-fpmの起動スクリプトを配置
+  template: src=php-fpm.j2 dest=/etc/init.d/php-fpm mode=0755
+- name: php-fpmが起動しているか確認
+  command: pgrep php-fpm
+  ignore_errors: true
+  register: check_fpm
+- name: php-fpmを起動
+  command: /sbin/service php-fpm start
+  when: check_fpm|failed
+- name: php-fpmをchkconfig onにする
+  service: name=php-fpm enabled=yes

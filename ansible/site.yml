@@ -1,0 +1,10 @@
+---
+- hosts: all
+  sudo: true
+  roles:
+    - common
+    - nginx
+    - mysql
+    - postgresql
+    - phpenv
+    # - for_cakephp

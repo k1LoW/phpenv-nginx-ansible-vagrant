@@ -1,0 +1,32 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+VAGRANTFILE_API_VERSION = "2"
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  config.vm.box = "centos6.5"
+  config.vm.network :forwarded_port, host: 8055, guest: 8055
+  config.vm.provision "ansible" do |ansible|
+    ansible.playbook = "../ansible/site.yml"
+    ansible.verbose = "v"
+    ansible.extra_vars = {
+      hostname: "phpenv.vagrant",
+      allow_ip_address: "10.0.0.0/255.255.0.0",
+      username: "vagrant",
+      usergroup: "vagrant",
+      php_version: "5.5.12",
+      php_fpm_port: "50055",
+      docroot: "/var/www/html/",
+      dbname: "testdb"
+    }
+  end
+  config.vm.provider :virtualbox do |vb|
+    # vb.customize ["modifyvm", :id, "--cpuexecutioncap", "80"]
+    vb.customize ["modifyvm", :id, "--memory", "2048"]
+    vb.customize ["modifyvm", :id, "--natdnsproxy1", "off"]
+    vb.customize ["modifyvm", :id, "--natdnshostresolver1", "off"]
+    vb.customize ["modifyvm", :id, "--cpus", "1"]
+    vb.customize ["modifyvm", :id, "--ioapic", "on"]
+    vb.customize ["modifyvm", :id, "--vram", "12"]
+  end
+end
