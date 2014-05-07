@@ -1,6 +1,6 @@
 ---
 - name: hostnameを設定
-  command: hostname {{ hostname }}
+  hostname: name={{ hostname }}
 - name: sysyconfig/i18nを日本語に設定
   raw: sed -i.org -e "s/LANG=\"C\"/LANG=\"ja_JP.UTF-8\"/" /etc/sysconfig/i18n
 - name: SELinux moduleのためのパッケージをインストール

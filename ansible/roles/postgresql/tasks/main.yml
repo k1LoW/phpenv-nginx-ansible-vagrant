@@ -7,7 +7,7 @@
   yum: name={{ item }} state=present
   with_items:
     - postgresql-server
-- name: check postgresql.conf
+- name: postgresql.confが存在するか確認
   command: test -f "/var/lib/pgsql/data/postgresql.conf"
   register: result
   ignore_errors: true
